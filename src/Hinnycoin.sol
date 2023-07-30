@@ -5,22 +5,22 @@ import {ERC20Burnable, ERC20} from "../lib/openzeppelin-contracts/contracts/toke
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 //@author: Pietro Zanotta
-//@title: Bardottocoin
+//@title: Hinnycoin
 //@description: The following contract creates an algoritmic stablecoin
 //              collateralized by wETH and wBTC, whose price is anchored
 //              to 1 USD.
 
-contract Bardottocoin is ERC20Burnable, Ownable {
-    error Bardottocoin__MustBeMoreThanZero();
-    error Bardottocoin__BurnAmountExceedsBalance();
-    error Bardottocoin__NotZeroAddress();
+contract Hinnycoin is ERC20Burnable, Ownable {
+    error Hinnycoin__MustBeMoreThanZero();
+    error Hinnycoin__BurnAmountExceedsBalance();
+    error Hinnycoin__NotZeroAddress();
 
-    constructor() ERC20("Bardottocoin", "BDC") {}
+    constructor() ERC20("Hinnycoin", "HNC") Ownable() {}
 
     function burn(uint256 _amount) public override onlyOwner {
         uint256 balance = balanceOf(msg.sender);
-        if (_amount <= 0) revert Bardottocoin__MustBeMoreThanZero();
-        if (_amount >= balance) revert Bardottocoin__BurnAmountExceedsBalance();
+        if (_amount <= 0) revert Hinnycoin__MustBeMoreThanZero();
+        if (_amount >= balance) revert Hinnycoin__BurnAmountExceedsBalance();
 
         super.burn(_amount);
     }
@@ -29,8 +29,8 @@ contract Bardottocoin is ERC20Burnable, Ownable {
         address _to,
         uint256 _amount
     ) external onlyOwner returns (bool) {
-        if (_to == address(0)) revert Bardottocoin__NotZeroAddress();
-        if (_amount <= 0) revert Bardottocoin__MustBeMoreThanZero();
+        if (_to == address(0)) revert Hinnycoin__NotZeroAddress();
+        if (_amount <= 0) revert Hinnycoin__MustBeMoreThanZero();
 
         _mint(_to, _amount);
         return true;
