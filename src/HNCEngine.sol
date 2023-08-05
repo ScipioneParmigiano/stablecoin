@@ -5,6 +5,7 @@ import {Hinnycoin} from "src/Hinnycoin.sol";
 import {HNCEngineInterface} from "src/HNCEngineInterface.sol";
 import {IERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {AggregatorV3Interface} from "../lib/chainlink-brownie-contracts/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {OracleLib} from "./libraries/OracleLib.sol";
 
 //@author: Pietro Zanotta
 //@title: HNCEngine
@@ -24,6 +25,13 @@ contract HNCEngine {
     error HNCEngine__MintFailed();
     error HNCEngine__HealthFactorOk();
     error HNCEngine__HealthFactorNotImproved();
+
+    /*
+     *** Types ***
+     */
+
+    using OracleLib for AggregatorV3Interface;
+
     /*
      *** Events ***
      */
@@ -222,7 +230,7 @@ contract HNCEngine {
             s_tokenToPriceFeeds[_token]
         );
 
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = priceFeed.stalePriceCheck();
         return
             ((uint256(price) * ADDITIONAL_FEED_PRECISION) * _amount) /
             PRECISION;
@@ -242,7 +250,7 @@ contract HNCEngine {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(
             s_tokenToPriceFeeds[_token]
         );
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = priceFeed.stalePriceCheck();
         return ((_usdAmountInWei * PRECISION) /
             (uint256(price) * ADDITIONAL_FEED_PRECISION));
     }
@@ -344,7 +352,7 @@ contract HNCEngine {
     //@notice the health factor is calculated based on aave docs
     function _revertIfHealthFactorIsBroken(address _user) internal view {
         uint256 userHealthFactor = _healthFactor(_user);
-        if (userHealthFactor <= MIN_HEALTH_FACTOR)
+        if (userHealthFactor < MIN_HEALTH_FACTOR)
             revert HNCEngine__BreaksHealthFactor(userHealthFactor);
     }
 
@@ -385,5 +393,30 @@ contract HNCEngine {
 
     function getHealthFactor(address user) external view returns (uint256) {
         return _healthFactor(user);
+    }
+
+    function getLiquidationBonus() public pure returns (uint256) {
+        return LIQUIDATION_BONUS;
+    }
+
+    function getCollateralTokens() external view returns (address[] memory) {
+        return s_collateralTokens;
+    }
+
+    function getCollateralBalanceOfUser(
+        address user,
+        address token
+    ) external view returns (uint256) {
+        return s_collateralDeposited[user][token];
+    }
+
+    function getCollateralTokenPriceFeed(
+        address token
+    ) external view returns (address) {
+        return s_tokenToPriceFeeds[token];
+    }
+
+    function getMinHealthFactor() public pure returns (uint256) {
+        return MIN_HEALTH_FACTOR;
     }
 }

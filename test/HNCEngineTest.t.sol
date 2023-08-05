@@ -28,10 +28,12 @@ contract HNCEngineTest is StdCheats, Test {
     uint256 public constant STARTING_USER_BALANCE = 10 ether;
     uint256 public constant MIN_HEALTH_FACTOR = 1e18;
     uint256 public constant LIQUIDATION_THRESHOLD = 50;
+    uint256 public collateralToCover = 20 ether;
     address[] public tokenAddresses;
     address[] public priceFeedAddresses;
 
     address public USER = makeAddr("BOB");
+    address public USER2 = makeAddr("ALICE");
 
     DeployHinnycoin deployer;
     HNCEngine hncEngine;
@@ -210,5 +212,39 @@ contract HNCEngineTest is StdCheats, Test {
 
         assertEq(HF, expectedHF);
         vm.stopPrank();
+    }
+
+    function testRevertLiquidateNullAmount() public depositedCollateral {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                HNCEngine.HNCEngine__MustBeMoreThanZero.selector
+            )
+        );
+        hncEngine.liquidate(weth, USER, 0);
+    }
+
+    function testRevertLiquidateWithGoodHealthFactor()
+        public
+        depositedCollateral
+    {
+        vm.expectRevert(
+            abi.encodeWithSelector(HNCEngine.HNCEngine__HealthFactorOk.selector)
+        );
+        hncEngine.liquidate(weth, USER, 1);
+    }
+
+    function testGetAccountCollateralValue() public {
+        vm.startPrank(USER);
+        ERC20Mock(weth).approve(address(hncEngine), amountCollateral);
+        hncEngine.depositCollateral(weth, amountCollateral);
+        vm.stopPrank();
+        uint256 collateralValue = hncEngine.getCollateralAccountValueInUsd(
+            USER
+        );
+        uint256 expectedCollateralValue = hncEngine.getUsdValue(
+            amountCollateral,
+            weth
+        );
+        assertEq(collateralValue, expectedCollateralValue);
     }
 }
