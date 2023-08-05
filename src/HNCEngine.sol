@@ -2,7 +2,6 @@
 pragma solidity ^0.8.19;
 
 import {Hinnycoin} from "src/Hinnycoin.sol";
-import {HNCEngineInterface} from "src/HNCEngineInterface.sol";
 import {IERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {AggregatorV3Interface} from "../lib/chainlink-brownie-contracts/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {OracleLib} from "./libraries/OracleLib.sol";
