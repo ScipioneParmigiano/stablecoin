@@ -29,7 +29,6 @@ contract InvariantTest is StdInvariant, Test {
         deployer = new DeployHinnycoin();
         (hncEngine, hnc, corollary) = deployer.run();
         (, , weth, wbtc, ) = corollary.activeNetworkConfig();
-        //targetContract(address(hncEngine));
         handler = new Handler(hncEngine, hnc);
         targetContract(address(handler));
     }
