@@ -324,27 +324,27 @@ contract HNCEngine {
     //@description: calculate how close to liquidation a user is. If the ratio goes under 1, the user is liquidated
     function _healthFactor(address user) private view returns (uint256) {
         (
-            uint256 totalDscMinted,
+            uint256 totalHncMinted,
             uint256 collateralValueInUsd
         ) = _getAccountInfo(user);
-        return _calculateHealthFactor(totalDscMinted, collateralValueInUsd);
+        return _calculateHealthFactor(totalHncMinted, collateralValueInUsd);
     }
 
     function _calculateHealthFactor(
-        uint256 totalDscMinted,
+        uint256 totalHncMinted,
         uint256 collateralValueInUsd
     ) internal pure returns (uint256) {
-        if (totalDscMinted == 0) return type(uint256).max;
+        if (totalHncMinted == 0) return type(uint256).max;
         uint256 collateralAdjustedForThreshold = (collateralValueInUsd *
             LIQUIDATION_THRESHOLD) / 100;
-        return (collateralAdjustedForThreshold * 1e18) / totalDscMinted;
+        return (collateralAdjustedForThreshold * 1e18) / totalHncMinted;
     }
 
     function calculateHealthFactor(
-        uint256 totalDscMinted,
+        uint256 totalHncMinted,
         uint256 collateralValueInUsd
     ) external pure returns (uint256) {
-        return _calculateHealthFactor(totalDscMinted, collateralValueInUsd);
+        return _calculateHealthFactor(totalHncMinted, collateralValueInUsd);
     }
 
     //@param :_user is the person who wants to mint HNC. The function assert check whether _user has enough collateral
@@ -356,10 +356,10 @@ contract HNCEngine {
     }
 
     function healthFactor(
-        uint256 totalDscMinted,
+        uint256 totalHncMinted,
         uint256 collateralValueInUsd
     ) external pure returns (uint256) {
-        return _calculateHealthFactor(totalDscMinted, collateralValueInUsd);
+        return _calculateHealthFactor(totalHncMinted, collateralValueInUsd);
     }
 
     function getUsdValue(
