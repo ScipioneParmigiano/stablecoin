@@ -160,9 +160,9 @@ contract HNCEngineTest is StdCheats, Test {
         ERC20Mock(weth).approve(address(hncEngine), amountCollateral);
         hncEngine.depositCollateral(weth, amountCollateral);
 
-        uint256 expectedHealthFactor = hncEngine.calculateHealthFactor(
+        uint256 expectedHealthFactor = hncEngine.healthFactor(
             amountToMint,
-            hncEngine.getUsdValue(amountCollateral, weth)
+            hncEngine.tokenPriceToUsd(weth, amountCollateral)
         );
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -202,9 +202,9 @@ contract HNCEngineTest is StdCheats, Test {
             (uint256(price) * hncEngine.getAdditionalFeedPrecision())) /
             hncEngine.getPrecision();
         uint256 mintedAmount = 1;
-        uint256 expectedHF = hncEngine.calculateHealthFactor(
+        uint256 expectedHF = hncEngine.healthFactor(
             mintedAmount,
-            hncEngine.getUsdValue(amountCollateral, weth)
+            hncEngine.tokenPriceToUsd(weth, amountCollateral)
         );
 
         hncEngine.mintHNC(mintedAmount);
@@ -241,9 +241,9 @@ contract HNCEngineTest is StdCheats, Test {
         uint256 collateralValue = hncEngine.getCollateralAccountValueInUsd(
             USER
         );
-        uint256 expectedCollateralValue = hncEngine.getUsdValue(
-            amountCollateral,
-            weth
+        uint256 expectedCollateralValue = hncEngine.tokenPriceToUsd(
+            weth,
+            amountCollateral
         );
         assertEq(collateralValue, expectedCollateralValue);
     }

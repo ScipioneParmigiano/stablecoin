@@ -38,10 +38,10 @@ contract InvariantTest is StdInvariant, Test {
         uint256 totalDepositedWETH = IERC20(weth).balanceOf(address(hncEngine));
         uint256 totalDepositedWBTC = IERC20(wbtc).balanceOf(address(hncEngine));
 
-        uint256 collateralUsdValue = hncEngine.getUsdValue(
-            totalDepositedWETH,
-            weth
-        ) + hncEngine.getUsdValue(totalDepositedWBTC, wbtc);
+        uint256 collateralUsdValue = hncEngine.tokenPriceToUsd(
+            weth,
+            totalDepositedWETH
+        ) + hncEngine.tokenPriceToUsd(wbtc, totalDepositedWBTC);
 
         assert(collateralUsdValue >= totalHNCsupply);
     }

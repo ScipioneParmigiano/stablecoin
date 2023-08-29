@@ -218,8 +218,6 @@ contract HNCEngine {
         _revertIfHealthFactorIsBroken(msg.sender);
     }
 
-    function getHealthFactor() external view {}
-
     //@description: function to get the price of tokens in USD
     function _tokenPriceToUsd(
         address _token,
@@ -340,13 +338,6 @@ contract HNCEngine {
         return (collateralAdjustedForThreshold * 1e18) / totalHncMinted;
     }
 
-    function calculateHealthFactor(
-        uint256 totalHncMinted,
-        uint256 collateralValueInUsd
-    ) external pure returns (uint256) {
-        return _calculateHealthFactor(totalHncMinted, collateralValueInUsd);
-    }
-
     //@param :_user is the person who wants to mint HNC. The function assert check whether _user has enough collateral
     //@notice the health factor is calculated based on aave docs
     function _revertIfHealthFactorIsBroken(address _user) internal view {
@@ -362,25 +353,25 @@ contract HNCEngine {
         return _calculateHealthFactor(totalHncMinted, collateralValueInUsd);
     }
 
-    function getUsdValue(
-        uint256 amount,
-        address token
-    ) external view returns (uint256) {
-        return _getUsdValue(amount, token);
-    }
+    // function getUsdValue(
+    //     uint256 amount,
+    //     address token
+    // ) external view returns (uint256) {
+    //     return _getUsdValue(amount, token);
+    // }
 
-    function _getUsdValue(
-        uint256 amount,
-        address token
-    ) private view returns (uint256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(
-            s_tokenToPriceFeeds[token]
-        );
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+    // function _getUsdValue(
+    //     uint256 amount,
+    //     address token
+    // ) private view returns (uint256) {
+    //     AggregatorV3Interface priceFeed = AggregatorV3Interface(
+    //         s_tokenToPriceFeeds[token]
+    //     );
+    //     (, int256 price, , , ) = priceFeed.latestRoundData();
 
-        return
-            (amount * uint256(price) * ADDITIONAL_FEED_PRECISION) / PRECISION;
-    }
+    //     return
+    //         (amount * uint256(price) * ADDITIONAL_FEED_PRECISION) / PRECISION;
+    // }
 
     function getAdditionalFeedPrecision() public pure returns (uint256) {
         return ADDITIONAL_FEED_PRECISION;
